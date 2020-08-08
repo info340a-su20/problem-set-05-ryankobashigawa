@@ -1,7 +1,7 @@
 'use strict';
 
 //Create a variable `form` that refers to the `<form>` element in the DOM.
-
+let form = document.querySelector('form');
 /* Add an event listener to the `form` element that will listen for `'submit'` 
 type events (which occur when the form is submitted). In the callback function 
 for this event listener, do the following:
@@ -19,6 +19,19 @@ for this event listener, do the following:
      attribute a value of `true` (set the attribute directly with dot notation, 
      don't use `setAttribute()`).
 */
+
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+  if(this.checkValidity() == true) {
+    form.classList.add('d-none');
+    let alert = document.querySelector('.alert');
+    alert.classList.remove('d-none');
+  }else {
+    form.classList.add('was-validated');
+    let submit = document.querySelector('button');
+    submit.disabled = true;
+  }
+})
 
 
 
@@ -43,7 +56,7 @@ function getYearsSince(aDate){
 an event lister to the `#dobInput` <input> element that will respond to `"input"` 
 events (when the user changes the inputted value). In the callback function for 
 this event handler, do the following:
-  - Get the `.value` property of the `<input>` element (what the user typed in),
+  - Get the `.value` property of the `<input>` element (what the user typed in)
     and use that value and the `getYearsSince()` function to calculate the 
     user's age (use the `getYearsSince()`.
   - If the person's age is less than 13 (or greater than 200), call the 
@@ -60,6 +73,19 @@ The "Date of Birth" should now show an error when empty or if the year is too
 recent; otherwise it should highlight as valid. Note that you'll need to hit
 "Sign me up!" first to enable the validation highlighting!
 */
+let input = document.querySelector('#dobInput');
+
+input.addEventListener('input', function() {
+  let user = document.querySelector('#dobInput').value; //get age value
+  let age = getYearsSince(user);
+  if(age < 13) {
+    input.setCustomValidity("You need to be at least 13 years old.");
+    let feedback = document.querySelector('#dobFeedback');
+    feedback.textContent = "You need to be at least 13 years old.";
+  } else {
+    input.setCustomValidity("");
+  }
+})
 
 
 
@@ -76,15 +102,30 @@ function `validatePasswordMatch()`. This function should access both password
   Also change the `#passwordConfirmFeedback` element so its `textContent` is
   also blank (an empty string).
 */
-
-
+function validatePasswordMatch() {
+  let password1 = document.querySelector('#passwordInput').value;
+  let password2 = document.querySelector('#passwordConfirmInput').value;
+  let confirm = document.querySelector('#passwordConfirmInput');
+  let confirmFeed = document.querySelector('#passwordConfirmFeedback');
+  if(password1 != password2) {
+    confirm.setCustomValidity("Passwords do not match");
+    confirm.textContent = "Passwords do not match";
+    confirmFeed.textContent = "Passwords do not match";
+  }else {
+    confirm.setCustomValidity("");
+    confirmFeed.textContent = "";
+  }
+}
 
 /* Assign the `validatePasswordMatch` function as the callback for `input` 
 events that happen on BOTH the `#passwordInput` and `#passwordConfirmInput`
 elements. You can select the elements individually or using `querySelectorAll()`.
 */
-
-
+let passwords = document.querySelectorAll('#passwordInput, #passwordConfirmInput');
+//reference: https://stackoverflow.com/questions/40956717/how-to-addeventlistener-to-multiple-elements-in-a-single-line
+passwords.forEach(function(elem) {
+  elem.addEventListener("input", validatePasswordMatch);
+});
 
 /* Last you'll need to only enable the "submit" button if the form is valid. Use
 the `querySelectorAll()` method to select all 4 of the <input> elements. Use the
@@ -97,7 +138,17 @@ if the <form> element has the `was-validated` class. If so, set the button's
 This should disable the button until all of the fields are valid, but only after
 the user tries to submit once (which is a polite user experience)
 */
-
+let inputs = document.querySelectorAll('input');
+let button = document.querySelector('button');
+inputs.forEach(function(element) {
+  element.addEventListener("input", function() {
+     if(form.classList.contains('was-validated')) {
+      button.disabled = true;
+     }else {
+       button.disabled = false;
+     }
+  });
+});
 
 
 
